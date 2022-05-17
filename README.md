@@ -1,5 +1,6 @@
 Tinder auto like
 
+utilizes the app api
 
 Bypasses the initial Out of likes however you will get rate limited after awhile.
 
