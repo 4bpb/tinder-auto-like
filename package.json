@@ -9,7 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "chalk": "^4.1.0",
     "dotenv": "^16.0.1",
+    "moment": "^2.29.3",
     "node-fetch": "^2.6.7"
   }
 }
