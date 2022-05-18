@@ -3,6 +3,24 @@ require('dotenv').config()
 let log = require('./logger.js')
 let set = new Set()
 
+fetch(process.env.WEBHOOK,{
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+        username: 'Tinder Bot',
+        avatar_url : 'https://tinder.com/favicon-32x32.png',
+        content : "Tinder Bot Started",
+
+    })
+})
+.then(res => res.text())
+.then(body => {
+    console.log(body)
+}) 
+
+
 function main(){
     fetch('https://api.gotinder.com/v3/auth/login', {
         method: 'POST',
