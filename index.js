@@ -27,6 +27,7 @@ fetch(process.env.WEBHOOK,{
 
 function main(){
     fetch('https://api.gotinder.com/v3/auth/login', {
+        timeout: 10000,
         method: 'POST',
         headers: {
             'Host': 'api.gotinder.com',
@@ -53,6 +54,7 @@ function main(){
 
 function recommendations(auth_token){
     fetch('https://api.gotinder.com/v2/recs/core?locale=en', {
+        timeout: 10000,
         headers: {
             'Host': 'api.gotinder.com',
             'User-Agent': 'Tinder/13.7.0 (iPhone; iOS 15.4.1; Scale/3.00)',
@@ -91,6 +93,7 @@ function recommendations(auth_token){
     
     
                 fetch('https://api.gotinder.com/like/'+id, {
+                    timeout: 10000,
                     method: 'POST',
                     headers: {
                         'Host': 'api.gotinder.com',
@@ -135,6 +138,7 @@ function recommendations(auth_token){
 
 function explore_recommendations_catalogs(auth_token){
     fetch('https://api.gotinder.com/v2/explore?locale=en', {
+        timeout: 10000,
         headers: {
             'Host': 'api.gotinder.com',
             'x-supported-image-formats': 'webp,jpeg',
@@ -166,6 +170,7 @@ function explore_recommendations_catalogs(auth_token){
 
 function like_from_rec_cata(cata_id,auth_token){
     fetch('https://api.gotinder.com/v2/explore/recs?locale=en&catalog_id='+cata_id, {
+        timeout: 10000,
         headers: {
             'Host': 'api.gotinder.com',
             'x-supported-image-formats': 'webp,jpeg',
@@ -196,6 +201,7 @@ function like_from_rec_cata(cata_id,auth_token){
 
 
             fetch('https://api.gotinder.com/like/'+id, {
+                timeout: 10000,
                 method: 'POST',
                 headers: {
                     'Host': 'api.gotinder.com',
@@ -246,6 +252,7 @@ function like_from_rec_cata(cata_id,auth_token){
 function retry_like(user_id,auth_token,s_number,content_hash){
     fetch('https://api.gotinder.com/like/'+user_id, {
         method: 'POST',
+        timeout: 10000,
         headers: {
             'Host': 'api.gotinder.com',
             'x-supported-image-formats': 'webp, jpeg',
