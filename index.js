@@ -3,6 +3,10 @@ require('dotenv').config()
 let log = require('./logger.js')
 let set = new Set()
 
+
+
+
+
 fetch(process.env.WEBHOOK,{
     method: 'POST',
     headers: {
@@ -100,6 +104,7 @@ function recommendations(auth_token){
                     },
                     body: JSON.stringify({
                         's_number': s_number,
+                        'is_boosting': '1',
                         'content_hash': content_hash
                     })
                 })
@@ -204,6 +209,7 @@ function like_from_rec_cata(cata_id,auth_token){
                 },
                 body: JSON.stringify({
                     's_number': s_number,
+                    'is_boosting': '1',
                     'content_hash': content_hash
                 })
             })
@@ -252,6 +258,7 @@ function retry_like(user_id,auth_token,s_number,content_hash){
         },
         body: JSON.stringify({
             's_number': s_number,
+            'is_boosting': '1',
             'content_hash': content_hash
         })
     })
@@ -265,7 +272,7 @@ function retry_like(user_id,auth_token,s_number,content_hash){
     .catch(err => {
         //console.log('Possible Error on Retry')
         if(set.has(user_id) == false){
-            retry_like(user_id,auth_token,s_number,content_hash)
+            //retry_like(user_id,auth_token,s_number,content_hash)
         }
         
     })
