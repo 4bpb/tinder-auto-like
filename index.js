@@ -79,58 +79,63 @@ function recommendations(auth_token){
 
             }
         } catch (error) {
-            let results = json.data.results
+            try {
+                let results = json.data.results
 
-            results.forEach(element => {
-                let id = element.user._id
-                let bio = element.user.bio
-                let gender = element.user.gender
-                let birthday = element.user.birth_date
-    
-                let s_number = element.s_number
-                let content_hash = element.content_hash
-    
-    
-    
-                fetch('https://api.gotinder.com/like/'+id, {
-                    timeout: 10000,
-                    method: 'POST',
-                    headers: {
-                        'Host': 'api.gotinder.com',
-                        'x-supported-image-formats': 'webp, jpeg',
-                        'Accept': '*/*',
-                        'Accept-Language': 'en-US,en;q=0.9',
-                        'platform': 'ios',
-                        'User-Agent': 'Tinder/13.7.0 (iPhone; iOS 15.4.1; Scale/3.00)',
-                        'X-Auth-Token': auth_token,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        's_number': s_number,
-                        'is_boosting': '1',
-                        'content_hash': content_hash
+                results.forEach(element => {
+                    let id = element.user._id
+                    let bio = element.user.bio
+                    let gender = element.user.gender
+                    let birthday = element.user.birth_date
+        
+                    let s_number = element.s_number
+                    let content_hash = element.content_hash
+        
+        
+        
+                    fetch('https://api.gotinder.com/like/'+id, {
+                        timeout: 10000,
+                        method: 'POST',
+                        headers: {
+                            'Host': 'api.gotinder.com',
+                            'x-supported-image-formats': 'webp, jpeg',
+                            'Accept': '*/*',
+                            'Accept-Language': 'en-US,en;q=0.9',
+                            'platform': 'ios',
+                            'User-Agent': 'Tinder/13.7.0 (iPhone; iOS 15.4.1; Scale/3.00)',
+                            'X-Auth-Token': auth_token,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            's_number': s_number,
+                            'is_boosting': '1',
+                            'content_hash': content_hash
+                        })
                     })
-                })
-                .then(res => res.json())
-                .then(json => {
-                    if(json.status == 200){
-                        log('Liked '+ id + 'Is Repeat? '  + set.has(id),'ok')
-                        set.add(id)
-                    }
-                })
-                .catch(err => {
-                    log('Possible Error in Response... Is Repeat? ' + set.has(id),'err')
-                    retry_like(id,auth_token)
-                })
-    
-                
-                if(results[results.length - 1].user._id == id){
-                    main()
+                    .then(res => res.json())
+                    .then(json => {
+                        if(json.status == 200){
+                            log('Liked '+ id + 'Is Repeat? '  + set.has(id),'ok')
+                            set.add(id)
+                        }
+                    })
+                    .catch(err => {
+                        log('Possible Error in Response... Is Repeat? ' + set.has(id),'err')
+                        retry_like(id,auth_token)
+                    })
+        
                     
-                }
-            });
+                    if(results[results.length - 1].user._id == id){
+                        main()
+                        
+                    }
+                });
+            } catch (error) {
+                log('likley you are out of local people, trying to random popular location','init')
+                get_popular_locations(auth_token)
+            }
         }
-        //console.log(json)
+
 
     });
 }
@@ -282,6 +287,55 @@ function retry_like(user_id,auth_token,s_number,content_hash){
             //retry_like(user_id,auth_token,s_number,content_hash)
         }
         
+    })
+}
+
+
+function get_popular_locations(auth_token){
+    fetch('https://api.gotinder.com/location/popular?locale=en', {
+        headers: {
+            'Host': 'api.gotinder.com',
+            'x-supported-image-formats': 'webp, jpeg',
+            'Accept': '*/*',
+            'app-version': '4696',
+            'tinder-version': '13.8.0',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'platform': 'ios',
+            'User-Agent': 'Tinder/13.8.0 (iPhone; iOS 15.4.1; Scale/3.00)',
+            'X-Auth-Token': auth_token
+        }
+    })
+    .then(res => res.json())
+    .then(json => {
+        let locations = json.results
+
+        let ran_local = locations[Math.floor(Math.random() * (locations.length))]
+
+        let lat = ran_local.lat
+        let lon = ran_local.lon
+
+        fetch('https://api.gotinder.com/passport/user/travel', {
+            method: 'POST',
+            headers: {
+                'Host': 'api.gotinder.com',
+                'x-supported-image-formats': 'webp, jpeg',
+                'Accept': '*/*',
+                'Accept-Language': 'en-US;q=1',
+                'platform': 'ios',
+                'Content-Type': 'application/json',
+                'User-Agent': 'Tinder/13.8.0 (iPhone; iOS 15.4.1; Scale/3.00)',
+                'X-Auth-Token': auth_token
+            },
+            body: JSON.stringify({
+                'lat': lat,
+                'lon': lon
+            })
+        })
+        .then(res => res.json())
+        .then(json => {
+            log('Location Randomized, Restarting','res')
+            recommendations(auth_token)
+        })
     })
 }
 
