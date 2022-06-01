@@ -15,3 +15,7 @@ I added in some user traits so you can add in your own logic to deciding if you 
 Jun 1: Added:
         Local Location changing
         took out popular location changing
+
+May 31: Added
+        Location Changing based on a random popular location
+        might need to have a tinder sub untested if no sub avial
