@@ -11,3 +11,7 @@ May 18: Added:
 
 You'll need to capture your login protobuf and device ID for this script to work. Then add those into .env(example.env remove example) file
 I added in some user traits so you can add in your own logic to deciding if you wanna like the person.
+
+Jun 1: Added:
+        Local Location changing
+        took out popular location changing
