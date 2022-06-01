@@ -258,73 +258,81 @@ function like_from_rec_cata(cata_id,auth_token){
 
 
 function retry_like(user_id,auth_token,s_number,content_hash){
-    fetch('https://api.gotinder.com/like/'+user_id, {
-        method: 'POST',
-        timeout: 10000,
-        headers: {
-            'Host': 'api.gotinder.com',
-            'x-supported-image-formats': 'webp, jpeg',
-            'Accept': '*/*',
-            'Accept-Language': 'en-US,en;q=0.9',
-            'platform': 'ios',
-            'User-Agent': 'Tinder/13.7.0 (iPhone; iOS 15.4.1; Scale/3.00)',
-            'X-Auth-Token': auth_token,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            's_number': s_number,
-            'is_boosting': '1',
-            'content_hash': content_hash
-        })
-    })
-    .then(res => res.json())
-    .then(json => {
-        if(json.status == 200){
-            log('Retry on User '+ id + ' Worked','ok')
-            set.add(id)
-        }
-    })
-    .catch(err => {
-        //console.log('Possible Error on Retry')
-        if(set.has(user_id) == false){
-            //retry_like(user_id,auth_token,s_number,content_hash)
-        }
-        
-    })
-}
-
-function travel_to_local_locations(auth_token){
-    const P = {
-        latitude: process.env.LAT,
-        longitude: process.env.LON
-      }
-       
-      const R = process.env.DISTANCE // meters
-       
-      let randomPoint = randomLocation.randomCirclePoint(P, R)
-
-      fetch('https://api.gotinder.com/passport/user/travel', {
+    try {
+        fetch('https://api.gotinder.com/like/'+user_id, {
             method: 'POST',
+            timeout: 10000,
             headers: {
                 'Host': 'api.gotinder.com',
                 'x-supported-image-formats': 'webp, jpeg',
                 'Accept': '*/*',
-                'Accept-Language': 'en-US;q=1',
+                'Accept-Language': 'en-US,en;q=0.9',
                 'platform': 'ios',
-                'Content-Type': 'application/json',
-                'User-Agent': 'Tinder/13.8.0 (iPhone; iOS 15.4.1; Scale/3.00)',
-                'X-Auth-Token': auth_token
+                'User-Agent': 'Tinder/13.7.0 (iPhone; iOS 15.4.1; Scale/3.00)',
+                'X-Auth-Token': auth_token,
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                'lat': randomPoint.latitude,
-                'lon': randomPoint.longitude
+                's_number': s_number,
+                'is_boosting': '1',
+                'content_hash': content_hash
             })
         })
         .then(res => res.json())
         .then(json => {
-            log('Location Localized, Restarting','res')
-            recommendations(auth_token)
+            if(json.status == 200){
+                log('Retry on User '+ id + ' Worked','ok')
+                set.add(id)
+            }
         })
+        .catch(err => {
+            //console.log('Possible Error on Retry')
+            if(set.has(user_id) == false){
+                //retry_like(user_id,auth_token,s_number,content_hash)
+            }
+            
+        })
+    } catch (error) {
+        recommendations(auth_token)
+    }
+}
+
+function travel_to_local_locations(auth_token){
+    try {
+        const P = {
+            latitude: process.env.LAT,
+            longitude: process.env.LON
+          }
+           
+          const R = process.env.DISTANCE // meters
+           
+          let randomPoint = randomLocation.randomCirclePoint(P, R)
+    
+          fetch('https://api.gotinder.com/passport/user/travel', {
+                method: 'POST',
+                headers: {
+                    'Host': 'api.gotinder.com',
+                    'x-supported-image-formats': 'webp, jpeg',
+                    'Accept': '*/*',
+                    'Accept-Language': 'en-US;q=1',
+                    'platform': 'ios',
+                    'Content-Type': 'application/json',
+                    'User-Agent': 'Tinder/13.8.0 (iPhone; iOS 15.4.1; Scale/3.00)',
+                    'X-Auth-Token': auth_token
+                },
+                body: JSON.stringify({
+                    'lat': randomPoint.latitude,
+                    'lon': randomPoint.longitude
+                })
+            })
+            .then(res => res.json())
+            .then(json => {
+                log('Location Localized, Restarting','res')
+                recommendations(auth_token)
+            })
+    } catch (error) {
+        travel_to_local_locations(auth_token)
+    }
 }
 
 
